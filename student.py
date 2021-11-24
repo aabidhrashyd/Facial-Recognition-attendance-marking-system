@@ -259,7 +259,7 @@ class student:
         controlbtn2 = ttk.Radiobutton(
             Class_frame, variable=self.var_radio2, text='No Photo Sample', value="No")
         controlbtn2.grid(row=6, column=1)
-
+# ===============================================================================================
         # buttons frame
         btn_frame = Frame(Class_frame, bd=2, relief=RIDGE, bg="White")
         btn_frame.place(x=0, y=200, width=715, height=70)
@@ -272,11 +272,11 @@ class student:
             "times new roman", 13, "bold"), bg="#A877BA", fg="Blue")
         Update_btn.grid(row=0, column=1)
 
-        Delete_btn = Button(btn_frame, text="Delete", width=24, font=(
+        Delete_btn = Button(btn_frame, command=self.delete_data, text="Delete", width=24, font=(
             "times new roman", 13, "bold"), bg="#A877BA", fg="Blue")
         Delete_btn.grid(row=0, column=2)
 
-        reset_btn = Button(btn_frame, text="Reset", bg="Black", fg="Blue", width=17, font=(
+        reset_btn = Button(btn_frame, command=self.reset_data, text="Reset", bg="Black", fg="Blue", width=17, font=(
             "times new roman", 13, "bold"))
         reset_btn.grid(row=0, column=3)
 
@@ -285,7 +285,9 @@ class student:
 
         take_photo_btn = Button(btn_frame1, command=self.generate_dataset, text="Take a photo sample", bg="Black", fg="BLUE", width=35, font=(
             "IMPACT", 13))
+        # command=self.generate_dataset,
         take_photo_btn.grid(row=1, column=0)
+        # command=self.generate_dataset,
 
         update_photo_btn = Button(btn_frame1, text="update a photo sample", bg="Black", fg="BLUE", width=35, font=(
             "IMPACT", 13))
@@ -367,6 +369,7 @@ class student:
 
         # ===functions error showing here $$$$$$$$$$$$$$$$$$$$$
 
+        # works properly
     def add_data(self):
         if self.var_dep.get() == "Select Department" or self.var_std_name.get() == "" or self.var_std_id.get() == "":
             messagebox.showerror(
@@ -420,7 +423,7 @@ class student:
         conn.close()
 
 
-# get cursor which i think is not important but how do i do it?
+# get cursor select from table show in forms
 
 
     def get_cursor(self, event=""):
@@ -454,7 +457,7 @@ class student:
         else:
             try:
                 Update = messagebox.askyesno(
-                    "CONFIRM THE CHANGES!", parent=self.root)
+                    "", "Confirm", parent=self.root)  # comms
                 if Update > 0:
                     conn = mysql.connector.connect(
                         host="localhost", username="root", password="Aabidh@apple", database="face_recognizer")
@@ -481,60 +484,78 @@ class student:
                 else:
                     if not Update:
                         return
-                messagebox.showinfo("Success", parent=self.root)
+                messagebox.showinfo(
+                    "success", "Successfully Updated", parent=self.root)
                 conn.commit()
-                conn.fetch_data()
+                self.fetch_data()
                 conn.close()
             except Exception as es:
                 messagebox.showerror(
                     "Error", f"Due to:{str(es)}", parent=self.root)
 
-        def delete_data(self):
-            if self.var_std_id.get() == "":
+    def delete_data(self):
+        if self.var_std_id.get() == "":
+            messagebox.showerror(
+                "Error", "Student ID must be requird", parent=self.root)
+        else:
+            try:
+                delete = messagebox.askyesno(
+                    "Student Delete page", "Do you want to delete this student", parent=self.root)
+                if delete > 0:
+                    conn = mysql.connector.connect(
+                        host="localhost", username="root", password="Aabidh@apple", database="face_recognizer")
+                    my_cursor = conn.cursor()
+                    sql = "DELETE FROM student WHERE student_id=%s"
+                    val = (self.var_std_id.get(),)
+                    my_cursor.execute(sql, val)
+                else:
+                    if not delete:
+                        return
+
+                conn.commit()
+                self.fetch_data()
+                conn.close()
+                messagebox.showinfo(
+                    "Delete", "sucessfully deleted", parent=self.root)
+            except Exception as es:
                 messagebox.showerror(
-                    "Error", "Student ID must be requird", parent=self.root)
-            else:
-                try:
-                    delete = messagebox.askyesno(
-                        "Student Delete page", "Do you want to delete this student", parent=self.root)
-                    if delete > 0:
-                        conn = mysql.connector.connect(
-                            host="localhost", username="root", password="Aabidh@apple", database="face_recognizer")
-                        my_cursor = conn.cursor()
-                        sql = "DELETE FROM student WHERE student_id=%s"
-                        val = (self.va_Std_id.get(),)
-                        my_cursor.execute(sql, val)
-                    else:
-                        if not delete:
-                            return
+                    "Error", f"Due to:{str(es)}", parent=self.root)
+        # reset Data
 
-                    conn.commit()
-                    self.fetch_data()
-                    conn.close()
-                    messagebox.showinfo(
-                        "Delete", "sucessfully deleted", parent=self.root)
-                except Exception as es:
-                    messagebox.showerror(
-                        "Error", f"Due to:{str(es)}", parent=self.root)
+    def reset_data(self):
+        self.var_course.set("Select Course"),
+        self.var_year.set("Select Year"),
+        self.var_semester.set("Select Semester"),
+        self.var_dep.set("Select Department"),
+        self.var_std_name.set(""),
+        self.var_faculty.set(""),
+        self.var_gender.set("Male"),
+        self.var_DOB.set(""),
+        self.var_email.set(""),
+        self.var_phone.set(""),
+        self.var_parmaddress.set(""),
+        self.var_island.set(""),
+        self.var_present.set(""),
+        self.var_radio1.set(""),
+        self.var_std_id.set(""),
 
-
-# Main PART TAKE PHOTO
-
+    # ======= generate data set
 
     def generate_dataset(self):
+        # validation
         if self.var_dep.get() == "Select Department" or self.var_std_name.get() == "" or self.var_std_id.get() == "":
             messagebox.showerror(
                 "ERROR!!", "ALL FIELDS ARE REQUIRED", parent=self.root)
         else:
-            try:
+            try:  # no exception error
                 conn = mysql.connector.connect(
                     host="localhost", username="root", password="Aabidh@apple", database="face_recognizer")
                 my_cursor = conn.cursor()
                 my_cursor.execute("select * from student")
                 myresult = my_cursor.fetchall()
                 id = 0
-                for x in myresult:
-                    id += 1
+                for x in myresult:  # look
+                    id = id + 1  # calculation for id
                 my_cursor.execute("Update student set course=%s,year=%s,semester=%s,department=%s,student_name=%s,faculty=%s,gender=%s,dob=%s,email=%s,phone_number=%s,parmenent_address=%s,island=%s,present_address=%s, photosample=%s where student_id=%s ", (
 
                     self.var_course.get(),
@@ -553,49 +574,50 @@ class student:
                     self.var_radio1.get(),
                     self.var_std_id.get() == id+1
                 ))
-                conn.commit()  # update
-                conn.fetch_data()
+                conn.commit()
+                self.fetch_data()
+                self.reset_data()
                 conn.close()
 
-                # ===== LOAD PREDEFINED DATA
-                # unable to upload this
+                # ==== load predefind data
+
                 face_classifier = cv2.CascadeClassifier(
                     "haarcascade_frontalface_default.xml")
 
                 def face_cropped(img):
                     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
                     faces = face_classifier.detectMultiScale(gray, 1.3, 5)
-                    # scaling factor = 1.3
-                    # minimum neighbour = 5
-
-                    for(x, y, w, h) in faces:
+                    # 1.3 = scaling factor
+                    # 4 min naigbor
+                    for (x, y, w, h) in faces:
                         face_cropped = img[y:y+h, x:x+w]
                         return face_cropped
-
                 cap = cv2.VideoCapture(0)
                 img_id = 0
                 while True:
                     ret, my_frame = cap.read()
                     if face_cropped(my_frame) is not None:
                         img_id += 1
-                    face = cv2.resize(face_cropped(my_frame), (450, 450))
-                    face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
-                    file_name_path = "data/user." + \
-                        str(id)+"."+str(img_id)+".jpg"
-                    cv2.imwrite(file_name_path, face)
-                    cv2.putText(face, str(img_id), (50, 50),
-                                cv2.FONT_HERSHEY_COMPLEX, 2, (0, 255, 0), 2)
-                    cv2.imshow("croped face", face)
+                        face = cv2.resize(face_cropped(my_frame), (450, 450))
+                        face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
+                        file_name_path = "/Users/abidh/Desktop/FYP/data/user." + \
+                            str(id)+"."+str(img_id)+".jpg"
+                        cv2.imwrite(file_name_path, face)
+                        cv2.putText(face, str(img_id), (50, 50),
+                                    cv2.FONT_HERSHEY_COMPLEX, 2, (0, 255, 0), 2)
+                        cv2.imshow("cropped face", face)
 
-                    if cv2.waitKey(1) == 13 or int(img_id) == 50:
+                    if cv2.cv2.waitKey(1) == 13 or int(img_id) == 100:
                         break
                 cap.release()
                 cv2.destroyAllWindows()
-                messagebox.showinfo("Result", "Generating Dataset completed")
+                messagebox.showinfo("Result", "Generating datasets completed!")
 
             except Exception as es:
                 messagebox.showerror(
-                    "Error", f"Fuck:{str(es)}", parent=self.root)
+                    "Error", f"ERROR:{str(es)}", parent=self.root)
+
+# ============
 
 
 if __name__ == "__main__":
