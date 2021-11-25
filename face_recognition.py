@@ -1,3 +1,5 @@
+"""
+
 from tkinter import*
 from tkinter import ttk
 from tkinter.font import BOLD, Font
@@ -19,7 +21,7 @@ class Face_Recognition:
             "Impact", 35, BOLD),  bg="Black", fg="White")
         title_lbl.place(x=0, y=0, width=1530, height=45)
 
-        b1_btn = Button(self.root, text="Face Recognition", width="14", font=(
+        b1_btn = Button(self.root, command=self.face_recog, text="Face Recognition", width="14", font=(
             "time new roman", 13, "bold"), bg="black", fg="blue")
         b1_btn.place(x=0, y=380, width=1530, height=60)
 
@@ -34,12 +36,12 @@ class Face_Recognition:
             coord = []
 
             for (x, y, w, h) in features:
-                cv2.rectangle(img(x, y), (x+w, y+h), (0, 255, 0), 3)
+                cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 3)
                 student_id, predict = clf.predict(gray_image[y:y+h, x:x+w])
                 # print(id)
                 confidence = int((100*(1-predict/300)))
                 # print(confidence)
-
+                # binding
                 conn = mysql.connector.connect(
                     host="localhost", username="root", password="Aabidh@apple", database="face_recognizer")
                 my_cursor = conn.cursor()
@@ -51,26 +53,55 @@ class Face_Recognition:
                 print(i)
 
                 my_cursor.execute(
-                    "select student_name from student where student_id="+str(student_id))
-                i = my_cursor.fetchone()
-                i = "+".join(i)
-
-                my_cursor.execute(
                     "select department from student where student_id="+str(student_id))
                 d = my_cursor.fetchone()
                 d = "+".join(d)
 
                 if confidence > 66:
-                    cv2.putText(img, f"student_name:{i}", (x, y))
+                    cv2.putText(
+                        img, f"STD Name:{i}", (x, y-55), cv2.FONT_HERSHEY_COMPLEX, 0.8, (255, 255, 255), 3)
+                    cv2.putText(
+                        img, f"Department:{d}", (x, y-30), cv2.FONT_HERSHEY_COMPLEX, 0.8, (255, 255, 255), 3)
+                else:
+                    cv2.rectangle(img, (x, y), (x+w, y+h),
+                                  (0, 0, 2), 3)  # redbox
+                    cv2.putText(img, "Unknown Face", (x, y-30),
+                                cv2.FONT_HERSHEY_COMPLEX, 0.8, (255, 255, 255), 3)
+
+                coord = [x, y, w, y]
+            return coord
+
+        # recognise
+        def recognize(img, clf, faceCascade):
+            coord = draw_boundray(img, faceCascade, 1.1,
+                                  10, (255, 25, 255), "Face", clf)
+            return img
+
+        faceCascade = cv2.CascadeClassifier(
+            "haarcascade_frontalface_default.xml")
+        clf = cv2.face.LBPHFaceRecognizer_create()
+        clf.read("classifier.xml")
+
+        video_cap = cv2.VideoCapture(0)
+
+        while True:
+            ret, img = video_cap.read()
+            img = recognize(img, clf, faceCascade)
+            cv2.imshow("Face Recognition", img)
+
+            # hehe
+            if cv2.waitKey(0) == 13:
+                break
+            video_cap.release()
+            cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
     root = Tk()
     obj = Face_Recognition(root)
     root.mainloop()
-
-
 """
+
 
 from tkinter import*
 from tkinter import ttk
@@ -175,4 +206,3 @@ if __name__ == "__main__":
     root = Tk()
     obj = Face_Recognition(root)
     root.mainloop()
-"""
