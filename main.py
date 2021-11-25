@@ -3,6 +3,8 @@ from tkinter import ttk
 from tkinter.font import BOLD, Font
 from PIL import Image, ImageTk
 from student import student
+from train import Train
+#from face_recognition import Face_Recognition
 
 
 class Face_recognition_System:
@@ -68,7 +70,9 @@ class Face_recognition_System:
         img5 = img5.resize((220, 220), Image.ANTIALIAS)
         self.photoimg5 = ImageTk.PhotoImage(img5)
 
-        button1 = Button(bkg_image, image=self.photoimg5, cursor="hand2")
+        button1 = Button(bkg_image, image=self.photoimg5,
+                         cursor="hand2")
+        # command=self.face_data
         button1.place(x=500, y=100, width=220, height=220)
 
         button1 = Button(bkg_image, text="Face Detector", cursor="hand2", font=(
@@ -94,10 +98,11 @@ class Face_recognition_System:
         img7 = img7.resize((220, 220), Image.ANTIALIAS)
         self.photoimg7 = ImageTk.PhotoImage(img7)
 
-        button1 = Button(bkg_image, image=self.photoimg7, cursor="hand2")
+        button1 = Button(bkg_image, image=self.photoimg7,
+                         cursor="hand2", command=self.train_data)
         button1.place(x=1100, y=100, width=220, height=220)
 
-        button1 = Button(bkg_image, text="Train Data", cursor="hand2", font=(
+        button1 = Button(bkg_image, text="Train Data", command=self.train_data, cursor="hand2", font=(
             "times new roman", 15, "bold"),  fg="Black")
         button1.place(x=1100, y=300, width=220, height=40)
 
@@ -106,6 +111,16 @@ class Face_recognition_System:
         self.__new__window = Toplevel(self.root)
         self.app = student(self.__new__window)
 
+    def train_data(self):
+        self.__new__window = Toplevel(self.root)
+        self.app = Train(self.__new__window)
+
+
+"""
+    def face_data(self):
+        self.__new__window = Toplevel(self.root)
+        self.app = Face_Recognition(self.__new__window)
+"""
 
 if __name__ == "__main__":
     root = Tk()
