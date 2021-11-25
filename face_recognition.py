@@ -162,7 +162,7 @@ class Face_Recognition:
                 c = "+".join(c)
 
                 # % of match
-                if confidence > 77:
+                if confidence > 80:
                     cv2.putText(
                         img, f"STD Name:{i}", (x, y-55), cv2.FONT_HERSHEY_COMPLEX, 0.8, (255, 255, 255), 3)
                     cv2.putText(
