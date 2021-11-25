@@ -1,3 +1,75 @@
+from tkinter import*
+from tkinter import ttk
+from tkinter.font import BOLD, Font
+from PIL import Image, ImageTk
+from tkinter import messagebox
+import mysql.connector
+import cv2
+import os
+import numpy as np
+
+
+class Face_Recognition:
+    def __init__(self, root):
+        self.root = root
+        self.root.geometry("1530x790+0+0")
+        self.root.title("Face Recongition Attendance Marking System")
+
+        title_lbl = Label(self.root, text="Face Recognition", font=(
+            "Impact", 35, BOLD),  bg="Black", fg="White")
+        title_lbl.place(x=0, y=0, width=1530, height=45)
+
+        b1_btn = Button(self.root, text="Face Recognition", width="14", font=(
+            "time new roman", 13, "bold"), bg="black", fg="blue")
+        b1_btn.place(x=0, y=380, width=1530, height=60)
+
+        # Face recognition
+    def face_recog(self):
+        def draw_boundray(img, classifier, scaleFactor, minNeighbors, color, text, clf):
+            gray_image = cv2.cvtColor(img, cv2.COLOR_BAYER_BG2GRAY)
+            # print(gray_image) oki upto here
+            features = classifier.detectMutliScale(
+                gray_image, scaleFactor, minNeighbors)
+            # print(features)
+            coord = []
+
+            for (x, y, w, h) in features:
+                cv2.rectangle(img(x, y), (x+w, y+h), (0, 255, 0), 3)
+                student_id, predict = clf.predict(gray_image[y:y+h, x:x+w])
+                # print(id)
+                confidence = int((100*(1-predict/300)))
+                # print(confidence)
+
+                conn = mysql.connector.connect(
+                    host="localhost", username="root", password="Aabidh@apple", database="face_recognizer")
+                my_cursor = conn.cursor()
+
+                my_cursor.execute(
+                    "select student_name from student where student_id="+str(student_id))
+                i = my_cursor.fetchone()  # only name to fetch
+                i = "+".join(i)
+                print(i)
+
+                my_cursor.execute(
+                    "select student_name from student where student_id="+str(student_id))
+                i = my_cursor.fetchone()
+                i = "+".join(i)
+
+                my_cursor.execute(
+                    "select department from student where student_id="+str(student_id))
+                d = my_cursor.fetchone()
+                d = "+".join(d)
+
+                if confidence > 66:
+                    cv2.putText(img, f"student_name:{i}", (x, y))
+
+
+if __name__ == "__main__":
+    root = Tk()
+    obj = Face_Recognition(root)
+    root.mainloop()
+
+
 """
 
 from tkinter import*
