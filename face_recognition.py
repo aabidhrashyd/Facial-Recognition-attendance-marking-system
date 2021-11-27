@@ -52,7 +52,7 @@ class Face_Recognition:
             for(x, y, w, h) in features:
                 cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 3)
                 id, predict = clf.predict(gray_image[y:y+h, x:x+w])
-                confidence = int((100*(1-predict/300)))
+                confidence = int((100*(1-predict/400)))
 
                 conn = mysql.connector.connect(
                     host="localhost", username="root", password="Aabidh@apple", database="face_recognizer")
@@ -80,7 +80,7 @@ class Face_Recognition:
                 s = "+".join(s)
 
                 # % of match
-                if confidence > 89:
+                if confidence > 93:
                     cv2.putText(
                         img, f"STD ID:{s}", (x, y-75), cv2.FONT_HERSHEY_COMPLEX, 0.8, (255, 255, 255), 3)
                     cv2.putText(

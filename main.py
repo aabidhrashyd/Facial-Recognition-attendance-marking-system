@@ -5,6 +5,7 @@ from PIL import Image, ImageTk
 from student import student
 from train import Train
 from face_recognition import Face_Recognition
+from attendance import Attendance
 
 
 class Face_recognition_System:
@@ -84,10 +85,11 @@ class Face_recognition_System:
         img6 = img6.resize((220, 220), Image.ANTIALIAS)
         self.photoimg6 = ImageTk.PhotoImage(img6)
 
-        button1 = Button(bkg_image, image=self.photoimg6, cursor="hand2")
+        button1 = Button(bkg_image, image=self.photoimg6,
+                         command=self.Attendance, cursor="hand2")
         button1.place(x=800, y=100, width=220, height=220)
 
-        button1 = Button(bkg_image, text="Attendance", cursor="hand2", font=(
+        button1 = Button(bkg_image, command=self.Attendance, text="Attendance", cursor="hand2", font=(
             "times new roman", 15, "bold"),  fg="Black")
         button1.place(x=800, y=300, width=220, height=40)
 
@@ -117,6 +119,10 @@ class Face_recognition_System:
     def face_data(self):
         self.__new__window = Toplevel(self.root)
         self.app = Face_Recognition(self.__new__window)
+
+    def Attendance(self):
+        self.__new__window = Toplevel(self.root)
+        self.app = Attendance(self.__new__window)
 
 
 if __name__ == "__main__":
