@@ -7,6 +7,8 @@ from train import Train
 from face_recognition import Face_Recognition
 from attendance import Attendance
 
+# main window
+
 
 class Face_recognition_System:
     def __init__(self, root):

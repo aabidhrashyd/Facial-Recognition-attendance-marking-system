@@ -289,9 +289,9 @@ class student:
         take_photo_btn.grid(row=1, column=0)
         # command=self.generate_dataset,
 
-        update_photo_btn = Button(btn_frame1, text="update a photo sample", bg="Black", fg="BLUE", width=35, font=(
-            "IMPACT", 13))
-        update_photo_btn.grid(row=1, column=2)
+        # update_photo_btn = Button(btn_frame1, text="update a photo sample", bg="Black", fg="BLUE", width=35, font=(
+        #    "IMPACT", 13))
+       # update_photo_btn.grid(row=1, column=2)
 
 ###################################################
 
@@ -425,7 +425,6 @@ class student:
 
 # get cursor select from table show in forms
 
-
     def get_cursor(self, event=""):
         cursor_focus = self.student_table.focus()
         content = self.student_table.item(cursor_focus)
@@ -449,6 +448,7 @@ class student:
 
 
 # update function
+
 
     def update_data(self):
         if self.var_dep.get() == "Select Department" or self.var_std_name.get() == "" or self.var_std_id.get() == "":
@@ -539,7 +539,8 @@ class student:
         self.var_radio1.set(""),
         self.var_std_id.set(""),
 
-    # ======= generate data set
+    # ======= taking photosample
+    # matching the photos and the data in sql and updating that data
 
     def generate_dataset(self):
         # validation
@@ -554,8 +555,8 @@ class student:
                 my_cursor.execute("select * from student")
                 myresult = my_cursor.fetchall()
                 id = 0
-                for x in myresult:  # look
-                    id = id + 1  # calculation for id
+                for x in myresult:  # inserting all data
+                    id = id + 1  # calculation for binding id
                 my_cursor.execute("Update student set course=%s,year=%s,semester=%s,department=%s,student_name=%s,faculty=%s,gender=%s,dob=%s,email=%s,phone_number=%s,parmenent_address=%s,island=%s,present_address=%s, photosample=%s where student_id=%s ", (
 
                     self.var_course.get(),
@@ -579,21 +580,23 @@ class student:
                 self.reset_data()
                 conn.close()
 
-                # ==== load predefind data
+                # ==== load predefind data from opencv
 
                 face_classifier = cv2.CascadeClassifier(
-                    "haarcascade_frontalface_default.xml")
+                    "haarcascade_frontalface_default.xml")  # face detaction alorithm
 
                 def face_cropped(img):
+                    # grayscal conversion
                     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                    # 1.3 = scaling factor # 4 min naigbor
                     faces = face_classifier.detectMultiScale(gray, 1.3, 5)
-                    # 1.3 = scaling factor
-                    # 4 min naigbor
                     for (x, y, w, h) in faces:
                         face_cropped = img[y:y+h, x:x+w]
                         return face_cropped
+                # webcamera is 0 (opening web camera)
                 cap = cv2.VideoCapture(0)
                 img_id = 0
+                # taking 100 samples
                 while True:
                     ret, my_frame = cap.read()
                     if face_cropped(my_frame) is not None:
@@ -613,6 +616,7 @@ class student:
                 cv2.destroyAllWindows()
                 messagebox.showinfo("Result", "Generating datasets completed!")
 
+            # exception
             except Exception as es:
                 messagebox.showerror(
                     "Error", f"ERROR:{str(es)}", parent=self.root)

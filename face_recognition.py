@@ -27,9 +27,12 @@ class Face_Recognition:
 
         # ==============attendance==================
     def mark_attendance(self, s, i, c, d):
+        # creating a CSV file
         with open("attendance_marking.csv", "r+", newline="\n") as f:
+            # storing
             myDataList = f.readlines()
             name_list = []
+            # inserting all datas in name_list
             for line in myDataList:
                 entry = line.split((","))
                 name_list.append(entry[0])
@@ -52,8 +55,9 @@ class Face_Recognition:
             for(x, y, w, h) in features:
                 cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 3)
                 id, predict = clf.predict(gray_image[y:y+h, x:x+w])
-                confidence = int((100*(1-predict/400)))
+                confidence = int((100*(1-predict/300)))
 
+                # connecting SQL
                 conn = mysql.connector.connect(
                     host="localhost", username="root", password="Aabidh@apple", database="face_recognizer")
                 my_cursor = conn.cursor()
@@ -80,7 +84,8 @@ class Face_Recognition:
                 s = "+".join(s)
 
                 # % of match
-                if confidence > 93:
+                if confidence > 78:
+                    # face recognised std if name would be printed near box
                     cv2.putText(
                         img, f"STD ID:{s}", (x, y-75), cv2.FONT_HERSHEY_COMPLEX, 0.8, (255, 255, 255), 3)
                     cv2.putText(
@@ -110,14 +115,15 @@ class Face_Recognition:
         clf = cv2.face.LBPHFaceRecognizer_create()
         clf.read("classifier.xml")
 
-        video_cap = cv2.VideoCapture(0)
+        video_cap = cv2.VideoCapture(0)  # using web camera
 
         while True:
             ret, img = video_cap.read()
             img = recognize(img, clf, faceCascade)
-            cv2.imshow("Welcome To Face Recognition", img)
+            cv2.imshow("Welcome To Face Recognition",
+                       img)  # showing this window
 
-            if cv2.waitKey(1) == 13:
+            if cv2.waitKey(1) == 13:  # when press enter the window will be breaked
                 break
         video_cap.release()
         cv2.destroyAllWindows()
