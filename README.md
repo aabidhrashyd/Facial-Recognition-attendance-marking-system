@@ -1,6 +1,5 @@
-# FYP
-my final year project attendance marking system
-
-Project build using python & pyqt.
-
-To compaile the program install the following:
+# Facial Recogntion Attendance Marking System 
+App build using tkinter 
+install cv2 and numpy 
+install sql server and create a db 
+remember to change file path
